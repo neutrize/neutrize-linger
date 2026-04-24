@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LINGER</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="LINGER">
+<meta name="theme-color" content="#FDFAF5">
+<meta name="description" content="近藤千寿 · 感性のデータベース">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAMpSURBVHic7dExAQAAAMKg909tDwdUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAMBuAABHgAAAABJRU5ErkJggg==">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --pk: #D4537E; --pk-l: #FBEAF0; --pk-b: #F4C0D1; --pk-d: #72243E; --pk-dk: #4B1528;
+  --gold: #B8965A; --gold-l: #F7F2EA; --gold-b: #E8D8B8;
+  --ink: #2A2520; --ink-2: #6A5E58; --ink-3: #A09088;
+  --bg: #FDFAF5; --bg-2: #F3EFE8; --bg-3: #EAE4DB;
+  --bdr: rgba(184,150,90,0.2); --bdr2: rgba(184,150,90,0.4);
+  --teal: #1D9E75; --teal-l: #E1F5EE;
+  --amber: #EF9F27; --amber-l: #FAEEDA;
+}
+html, body { height: 100%; }
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.8;
+}
+
+
+/* ── Mobile / PWA ── */
+@media (max-width: 600px) {
+  .shell { padding: 0 16px 100px; }
+  .nav { padding: 20px 0 16px; }
+  .nav-title { font-size: 20px; }
+  .tab { padding: 8px 12px; font-size: 10px; }
+  .card { padding: 16px 18px; }
+  .fmt-row { grid-template-columns: repeat(2,1fr); }
+  .stat-row { grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .nav-kpi { grid-template-columns: repeat(3,1fr); }
+  .season-grid { grid-template-columns: repeat(2,1fr); }
+  .hm-grid { font-size: 8px !important; }
+  .hm-label { font-size: 8px !important; }
+}
+/* Safe area for notched phones */
+.shell { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+.bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Install banner */
+.install-banner {
+  display: none;
+  background: var(--pk);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.install-banner.show { display: flex; }
+.install-banner-text { font-size: 12px; letter-spacing: .05em; line-height: 1.5; }
+.install-banner-btn {
+  background: #fff;
+  color: var(--pk-d);
+  border: none;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 11px;
+  letter-spacing: .08em;
+  cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  white-space: nowrap;
+}
+.install-dismiss {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.7);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+/* ── Layout ── */
+.shell {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  min-height: 100vh;
+}
+
+/* ── Nav ── */
+.nav {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 28px 0 20px;
+  border-bottom: 0.5px solid var(--bdr);
+  margin-bottom: 28px;
+}
+.nav-brand { }
+.nav-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 300;
+  letter-spacing: .18em;
+  color: var(--ink);
+}
+.nav-sub {
+  font-size: 9px;
+  letter-spacing: .22em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+.nav-right { text-align: right; }
+.nav-date { font-size: 10px; color: var(--ink-3); letter-spacing: .08em; }
+.nav-count { font-size: 9px; color: var(--pk); letter-spacing: .1em; margin-top: 2px; }
+
+/* ── Tabs ── */
+.tab-row {
+  display: flex;
+  border-bottom: 0.5px solid var(--bdr);
+  margin-bottom: 28px;
+}
+.tab {
+  padding: 10px 18px;
+  font-size: 11px;
+  letter-spacing: .1em;
+  color: var(--ink-2);
+  cursor: pointer;
+  border-bottom: 1.5px solid transparent;
+  margin-bottom: -0.5px;
+  transition: all .2s;
+  background: none;
+  border-top: none; border-left: none; border-right: none;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--pk); border-bottom-color: var(--pk); }
+
+/* ── Sections ── */
+.sec { display: none; }
+.sec.active { display: block; }
+
+/* ── Labels ── */
+.lbl {
+  font-size: 9px;
+  letter-spacing: .22em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.gl {
+  font-size: 9px;
+  letter-spacing: .15em;
+  color: var(--ink-3);
+  margin-bottom: 6px;
+}
+
+/* ── Card ── */
+.card {
+  background: #fff;
+  border: 0.5px solid var(--bdr);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 14px;
+}
+
+/* ── Divider ── */
+.gdiv {
+  border: none;
+  border-top: 0.5px solid var(--bdr);
+  margin: 12px 0;
+}
+
+/* ── Chips ── */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+.chip {
+  padding: 5px 13px;
+  border: 0.5px solid var(--bg-3);
+  border-radius: 6px;
+  font-size: 11px;
+  letter-spacing: .04em;
+  cursor: pointer;
+  color: var(--ink-2);
+  background: transparent;
+  transition: all .2s;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.chip:hover { border-color: var(--pk); color: var(--pk-d); }
+.chip.on { border-color: var(--pk); background: var(--pk-l); color: var(--pk-d); }
+.chip.sense { border-color: rgba(212,83,126,.25); }
+
+/* ── Textarea ── */
+textarea {
+  width: 100%;
+  border: 0.5px solid var(--bdr);
+  border-radius: 6px;
+  padding: 14px 16px;
+  font-size: 13px;
+  font-family: 'Noto Sans JP', sans-serif;
+  color: var(--ink);
+  background: transparent;
+  resize: none;
+  line-height: 1.9;
+  outline: none;
+  transition: border-color .2s;
+  margin-bottom: 14px;
+}
+textarea:focus { border-color: var(--pk); }
+textarea::placeholder { color: var(--ink-3); }
+
+/* ── Range ── */
+.int-row { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.int-lbl { font-size: 10px; color: var(--ink-2); min-width: 72px; }
+input[type=range] { flex: 1; accent-color: var(--pk); }
+.int-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--pk);
+  min-width: 20px;
+  text-align: right;
+}
+
+/* ── Format buttons ── */
+.fmt-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 18px; }
+.fmt {
+  padding: 12px 4px 10px;
+  border: 0.5px solid var(--bdr);
+  border-radius: 8px;
+  font-size: 11px;
+  letter-spacing: .04em;
+  cursor: pointer;
+  color: var(--ink-2);
+  background: transparent;
+  transition: all .2s;
+  font-family: 'Noto Sans JP', sans-serif;
+  text-align: center;
+  line-height: 1.5;
+}
+.fmt .fi { display: block; font-size: 14px; margin-bottom: 5px; color: var(--ink-3); }
+.fmt .sub { display: block; font-size: 9px; opacity: .65; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fmt.on { border-color: var(--pk); background: var(--pk-l); color: var(--pk-d); }
+.fmt.on .fi { color: var(--pk); }
+
+/* ── Primary button ── */
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: var(--pk);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  letter-spacing: .18em;
+  cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  transition: opacity .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-primary:hover { opacity: .85; }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+
+.spin {
+  width: 14px; height: 14px;
+  border: 1.5px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: sp .7s linear infinite;
+  display: none;
+}
+.spin.show { display: block; }
+@keyframes sp { to { transform: rotate(360deg); } }
+
+/* ── Feedback card ── */
+.fb-card {
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-top: 14px;
+  display: none;
+}
+.fb-card.show { display: block; }
+.fb-card.affirm { background: var(--pk-l); border: 0.5px solid var(--pk-b); }
+.fb-card.caution { background: var(--amber-l); border: 0.5px solid #FAC775; }
+.fb-label { font-size: 9px; letter-spacing: .2em; text-transform: uppercase; margin-bottom: 10px; }
+.fb-card.affirm .fb-label { color: var(--pk); }
+.fb-card.caution .fb-label { color: #854F0B; }
+.fb-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 2;
+  margin-bottom: 10px;
+}
+.fb-card.affirm .fb-text { color: var(--pk-dk); }
+.fb-card.caution .fb-text { color: #412402; }
+
+.gen-box {
+  border: 0.5px solid var(--pk-b);
+  border-radius: 8px;
+  padding: 14px 18px;
+  background: rgba(212,83,126,.04);
+  margin-bottom: 12px;
+  display: none;
+}
+.gen-box.show { display: block; }
+.gen-label { font-size: 9px; letter-spacing: .18em; color: var(--pk); text-transform: uppercase; margin-bottom: 8px; }
+.gen-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 2;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+.gen-sign { font-size: 9px; color: var(--ink-3); letter-spacing: .14em; text-align: right; margin-top: 8px; }
+
+.save-row { display: flex; gap: 8px; margin-top: 12px; }
+.sb {
+  flex: 1;
+  padding: 11px;
+  border-radius: 6px;
+  font-size: 10px;
+  letter-spacing: .1em;
+  cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  transition: all .2s;
+}
+.sb.primary { background: var(--pk); color: #fff; border: none; }
+.sb.primary:hover { opacity: .85; }
+.sb.secondary { background: transparent; border: 0.5px solid var(--pk-b); color: var(--pk-d); }
+.sb.secondary:hover { border-color: var(--pk); background: var(--pk-l); }
+.sb:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── Stats ── */
+.stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+.stat { background: var(--bg-2); border-radius: 8px; padding: 12px 14px; }
+.stat-l { font-size: 9px; color: var(--ink-3); letter-spacing: .08em; margin-bottom: 4px; }
+.stat-v { font-size: 20px; font-weight: 500; color: var(--ink); }
+.stat-u { font-size: 10px; font-weight: 400; color: var(--ink-3); }
+
+/* ── Filter tags ── */
+.filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.f-tag {
+  padding: 5px 13px;
+  border: 0.5px solid var(--bdr);
+  border-radius: 6px;
+  font-size: 10px;
+  cursor: pointer;
+  color: var(--ink-2);
+  background: transparent;
+  transition: all .2s;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.f-tag.on { background: var(--pk); color: #fff; border-color: var(--pk); }
+
+/* ── Timeline ── */
+.timeline { position: relative; padding-left: 22px; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 6px; top: 0; bottom: 0;
+  width: 0.5px;
+  background: var(--bdr2);
+}
+.t-item { position: relative; padding: 0 0 20px 18px; }
+.t-dot {
+  position: absolute;
+  left: -16px; top: 5px;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--pk);
+  background: var(--bg);
+  transition: background .2s;
+}
+.t-item.strong .t-dot { background: var(--pk); }
+.t-date { font-size: 9px; color: var(--ink-3); letter-spacing: .1em; margin-bottom: 3px; }
+.t-sense { font-size: 9px; letter-spacing: .08em; color: var(--pk); margin-bottom: 4px; }
+.t-text { font-size: 13px; line-height: 1.8; color: var(--ink); margin-bottom: 6px; }
+.t-gen {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.8;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  color: var(--pk-d);
+  background: rgba(212,83,126,.06);
+  border-left: 2px solid var(--pk);
+}
+.t-fb {
+  font-size: 11px;
+  line-height: 1.75;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+.t-fb.affirm { background: var(--pk-l); color: var(--pk-d); border-left: 2px solid var(--pk); }
+.t-fb.caution { background: var(--amber-l); color: #633806; border-left: 2px solid var(--amber); }
+.t-meta { display: flex; gap: 8px; align-items: center; }
+.t-fmt { font-size: 9px; color: var(--ink-3); letter-spacing: .06em; }
+.t-stars { display: flex; gap: 2px; }
+.t-star { width: 5px; height: 5px; border-radius: 50%; background: var(--bg-3); }
+.t-star.on { background: var(--pk); }
+
+/* ── Heatmap ── */
+.hm-grid { display: grid; gap: 3px; margin-bottom: 8px; }
+.hm-cell { height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+.hm-label { font-size: 10px; color: var(--ink-2); display: flex; align-items: center; padding-right: 6px; }
+.hm-head { font-size: 9px; color: var(--ink-3); text-align: center; display: flex; align-items: center; justify-content: center; height: 22px; }
+.hm-0 { background: var(--bg-2); }
+.hm-1 { background: #FBEAF0; color: #993556; }
+.hm-2 { background: #F4C0D1; color: #72243E; }
+.hm-3 { background: #ED93B1; color: #4B1528; }
+.hm-4 { background: #D4537E; color: #fff; }
+.legend { display: flex; align-items: center; gap: 6px; margin-top: 6px; margin-bottom: 20px; }
+.legend-l { font-size: 9px; color: var(--ink-3); }
+.legend-dots { display: flex; gap: 3px; }
+.legend-dot { width: 16px; height: 7px; border-radius: 2px; }
+.insight-band { background: var(--pk-l); border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; }
+.insight-body { font-size: 12px; color: var(--pk-d); line-height: 1.8; }
+.season-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 14px; }
+.season-card { background: var(--bg-2); border-radius: 8px; padding: 12px 14px; }
+.season-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; color: var(--pk); margin-bottom: 4px; }
+.season-top { font-size: 10px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+.season-note { font-size: 9px; color: var(--ink-2); line-height: 1.6; }
+
+/* ── Confidence ── */
+.year-msg {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 2;
+  color: var(--ink);
+  padding: 16px 20px;
+  border-left: 2px solid var(--pk);
+  margin-bottom: 20px;
+}
+.conf-bar { height: 4px; background: var(--bg-3); border-radius: 2px; overflow: hidden; margin: 6px 0 5px; }
+.conf-fill { height: 100%; background: var(--pk); border-radius: 2px; transition: width 1s ease; }
+
+/* ── Navigator panel ── */
+.nav-panel { margin-top: 28px; border-top: 0.5px solid var(--bdr); padding-top: 20px; }
+.nav-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+.nav-panel-title { font-size: 10px; letter-spacing: .2em; color: var(--ink-3); text-transform: uppercase; }
+.nav-toggle { font-size: 10px; color: var(--ink-3); background: none; border: none; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; letter-spacing: .06em; }
+.nav-panel-body { display: none; }
+.nav-panel-body.open { display: block; }
+.nav-kpi { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+.nav-kpi-card {
+  background: #fff;
+  border: 0.5px solid var(--bdr);
+  border-radius: 8px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--bg-3);
+}
+.nav-kpi-card.good { border-left-color: var(--teal); }
+.nav-kpi-card.warn { border-left-color: var(--amber); }
+.nav-kpi-card.risk { border-left-color: #E24B4A; }
+.nav-kpi-l { font-size: 9px; color: var(--ink-3); letter-spacing: .08em; margin-bottom: 4px; }
+.nav-kpi-v { font-size: 18px; font-weight: 500; color: var(--ink); }
+.nav-kpi-note { font-size: 9px; color: var(--ink-2); margin-top: 3px; line-height: 1.5; }
+.nav-insight { border: 0.5px solid var(--bdr); border-radius: 8px; padding: 14px 18px; margin-bottom: 10px; }
+.nav-insight-label { font-size: 9px; letter-spacing: .15em; color: var(--ink-3); text-transform: uppercase; margin-bottom: 6px; }
+.nav-insight-text { font-size: 12px; color: var(--ink); line-height: 1.8; }
+.nav-caution-item {
+  font-size: 11px; color: #633806;
+  background: var(--amber-l);
+  border-radius: 4px; padding: 9px 13px;
+  margin-bottom: 7px; line-height: 1.6;
+  border-left: 2px solid var(--amber);
+}
+
+/* ── Ask button ── */
+.btn-ask {
+  width: 100%;
+  margin-top: 14px;
+  padding: 11px;
+  border: 0.5px solid var(--pk);
+  border-radius: 6px;
+  font-size: 10px;
+  letter-spacing: .12em;
+  color: var(--pk-d);
+  background: transparent;
+  cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  transition: all .2s;
+}
+.btn-ask:hover { background: var(--pk-l); }
+
+.empty { text-align: center; padding: 32px 0; color: var(--ink-3); font-size: 12px; letter-spacing: .06em; }
+
+/* ── API Key setup ── */
+.api-setup {
+  background: var(--gold-l);
+  border: 0.5px solid var(--gold-b);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+.api-setup-title { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+.api-setup-desc { font-size: 11px; color: var(--ink-2); line-height: 1.7; margin-bottom: 12px; }
+.api-input-row { display: flex; gap: 8px; }
+.api-input-row input {
+  flex: 1;
+  border: 0.5px solid var(--bdr2);
+  border-radius: 6px;
+  padding: 10px 13px;
+  font-size: 12px;
+  font-family: 'Noto Sans JP', sans-serif;
+  color: var(--ink);
+  background: #fff;
+  outline: none;
+}
+.api-input-row input:focus { border-color: var(--gold); }
+.api-set-btn {
+  padding: 10px 18px;
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  letter-spacing: .1em;
+  cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.api-status { font-size: 10px; margin-top: 6px; }
+.api-status.ok { color: var(--teal); }
+.api-status.ng { color: #A32D2D; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- PWA install banner -->
+  <div class="install-banner" id="install-banner">
+    <div class="install-banner-text">ホーム画面に追加してアプリとして使えます</div>
+    <button class="install-banner-btn" onclick="installPWA()">追加する</button>
+    <button class="install-dismiss" onclick="dismissInstall()">×</button>
+  </div>
+
+  <div class="nav">
+    <div class="nav-brand">
+      <div class="nav-title">LINGER</div>
+      <div class="nav-sub">近藤 千寿 · 感性のデータベース</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-date" id="today-lbl"></div>
+      <div class="nav-count" id="nav-count"></div>
+    </div>
+  </div>
+
+  <!-- API Key Setup -->
+  <div class="api-setup" id="api-setup">
+    <div class="api-setup-title">Anthropic API キーを設定する</div>
+    <div class="api-setup-desc">
+      フィードバックと言語化機能を使うには、Anthropic APIキーが必要です。
+      キーはこのブラウザにのみ保存されます。外部には送信されません。
+    </div>
+    <div class="api-input-row">
+      <input type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off">
+      <button class="api-set-btn" onclick="setApiKey()">設定する</button>
+    </div>
+    <div class="api-status" id="api-status"></div>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab active" onclick="sw('record')">記録する</button>
+    <button class="tab" onclick="sw('archive')">タイムライン</button>
+    <button class="tab" onclick="sw('heatmap')">蓄積マップ</button>
+    <button class="tab" onclick="sw('confidence')">1年後の私へ</button>
+  </div>
+
+  <!-- ══ RECORD ══ -->
+  <div class="sec active" id="sec-record">
+    <div class="card">
+      <div class="lbl">五感 · どこで感じた？</div>
+      <div class="chips" id="r-sense">
+        <button class="chip sense" onclick="rtog(this)">♪ 音</button>
+        <button class="chip sense" onclick="rtog(this)">◎ 香り</button>
+        <button class="chip sense" onclick="rtog(this)">◇ 清潔感</button>
+        <button class="chip sense" onclick="rtog(this)">○ 室温</button>
+        <button class="chip sense" onclick="rtog(this)">◈ 照明</button>
+        <button class="chip sense" onclick="rtog(this)">— 言葉</button>
+        <button class="chip sense" onclick="rtog(this)">· 間</button>
+        <button class="chip sense" onclick="rtog(this)">~ 空気感</button>
+      </div>
+      <div class="gdiv"></div>
+      <div class="gl">シーン · いつ？</div>
+      <div class="chips" id="r-scene">
+        <button class="chip" onclick="rscene(this)">カウンセリング</button>
+        <button class="chip" onclick="rscene(this)">来店直後</button>
+        <button class="chip" onclick="rscene(this)">シャンプー中</button>
+        <button class="chip" onclick="rscene(this)">施術中</button>
+        <button class="chip" onclick="rscene(this)">放置時間中</button>
+        <button class="chip" onclick="rscene(this)">仕上げ</button>
+        <button class="chip" onclick="rscene(this)">会計時</button>
+        <button class="chip" onclick="rscene(this)">見送り</button>
+      </div>
+      <div class="gdiv"></div>
+      <div class="gl">感触 · どんな感じ？</div>
+      <div class="chips">
+        <button class="chip" onclick="rtog(this)">なんか良かった</button>
+        <button class="chip" onclick="rtog(this)">心が開いた気がした</button>
+        <button class="chip" onclick="rtog(this)">時間がゆっくり流れた</button>
+        <button class="chip" onclick="rtog(this)">場が温かくなった</button>
+        <button class="chip" onclick="rtog(this)">いい間があった</button>
+        <button class="chip" onclick="rtog(this)">空気が変わった</button>
+        <button class="chip" onclick="rtog(this)">自然だった</button>
+        <button class="chip" onclick="rtog(this)">お客様の表情が変わった</button>
+        <button class="chip" onclick="rtog(this)">静かだった</button>
+        <button class="chip" onclick="rtog(this)">もどかしかった</button>
+        <button class="chip" onclick="rtog(this)">うまくいかなかった</button>
+        <button class="chip" onclick="rtog(this)">ぎこちなかった</button>
+      </div>
+      <div class="gdiv"></div>
+      <div class="gl">対象 · 誰に伝える？</div>
+      <div class="chips" id="r-target">
+        <button class="chip" onclick="rtog(this)">初回のお客様</button>
+        <button class="chip" onclick="rtog(this)">常連のお客様</button>
+        <button class="chip" onclick="rtog(this)">緊張していたお客様</button>
+        <button class="chip" onclick="rtog(this)">無口なお客様</button>
+        <button class="chip" onclick="rtog(this)">スタッフ全員に</button>
+        <button class="chip" onclick="rtog(this)">特定のスタッフに</button>
+      </div>
+      <div class="gdiv"></div>
+      <div class="gl">テーマ · 何を伝えたい？</div>
+      <div class="chips">
+        <button class="chip" onclick="rtog(this)">言葉の使い方</button>
+        <button class="chip" onclick="rtog(this)">距離感</button>
+        <button class="chip" onclick="rtog(this)">沈黙の扱い方</button>
+        <button class="chip" onclick="rtog(this)">見送りの一言</button>
+        <button class="chip" onclick="rtog(this)">五感の演出</button>
+        <button class="chip" onclick="rtog(this)">居心地づくり</button>
+        <button class="chip" onclick="rtog(this)">また来たいと思わせる</button>
+        <button class="chip" onclick="rtog(this)">空気のつくり方</button>
+      </div>
+      <div class="gdiv"></div>
+      <div class="lbl">断片でいい。感じたままに。</div>
+      <textarea id="r-text" rows="5" placeholder="今日感じたことを、思ったままに。うまく書けなくていい。"></textarea>
+      <div class="lbl">印象の強さ</div>
+      <div class="int-row">
+        <span class="int-lbl">かすかな余韻</span>
+        <input type="range" min="1" max="5" value="3" step="1" id="r-int" oninput="document.getElementById('r-intv').textContent=this.value">
+        <span class="int-val" id="r-intv">3</span>
+      </div>
+      <div class="lbl">残す形式</div>
+      <div class="fmt-row">
+        <button class="fmt on" onclick="setFmt('record',this)"><span class="fi">··</span>記録のまま<span class="sub">気づきとして</span></button>
+        <button class="fmt" onclick="setFmt('recipe',this)"><span class="fi">◈</span>レシピ<span class="sub">再現できる手順に</span></button>
+        <button class="fmt" onclick="setFmt('message',this)"><span class="fi">—</span>スタッフへ<span class="sub">朝礼で話せる言葉に</span></button>
+        <button class="fmt" onclick="setFmt('philosophy',this)"><span class="fi">·</span>言葉の帳<span class="sub">近藤の哲学として</span></button>
+      </div>
+      <button class="btn-primary" id="save-btn" onclick="saveRecord()">
+        <div class="spin" id="save-spin"></div>
+        <span id="save-lbl">記録してフィードバックをもらう</span>
+      </button>
+    </div>
+
+    <div class="fb-card" id="fb-card">
+      <div class="fb-label" id="fb-label">近藤へ</div>
+      <div class="fb-text" id="fb-text"></div>
+      <div class="gen-box" id="gen-box">
+        <div class="gen-label" id="gen-label">レシピ · 近藤の言葉</div>
+        <div class="gen-text" id="gen-text"></div>
+        <div class="gen-sign">近藤 千寿</div>
+      </div>
+      <div class="save-row">
+        <button class="sb primary" id="commit-btn" onclick="commitSave()">この記録を保存する</button>
+        <button class="sb secondary" onclick="copyGen()" id="copy-btn" style="display:none">コピー</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ARCHIVE ══ -->
+  <div class="sec" id="sec-archive">
+    <div class="stat-row">
+      <div class="stat"><div class="stat-l">総記録数</div><div class="stat-v" id="arc-total">0<span class="stat-u"> 件</span></div></div>
+      <div class="stat"><div class="stat-l">肯定率</div><div class="stat-v" id="arc-affirm">—</div></div>
+      <div class="stat"><div class="stat-l">最多五感</div><div class="stat-v" id="arc-top" style="font-size:13px;padding-top:4px">—</div></div>
+    </div>
+    <div class="filter-row">
+      <button class="f-tag on" onclick="setFilter(this,'all')">すべて</button>
+      <button class="f-tag" onclick="setFilter(this,'affirm')">肯定のみ</button>
+      <button class="f-tag" onclick="setFilter(this,'caution')">指摘あり</button>
+      <button class="f-tag" onclick="setFilter(this,'strong')">強度5</button>
+      <button class="f-tag" onclick="setFilter(this,'generated')">言語化あり</button>
+    </div>
+    <div class="timeline" id="timeline"></div>
+    <div class="empty" id="arc-empty">まだ記録がありません</div>
+  </div>
+
+  <!-- ══ HEATMAP ══ -->
+  <div class="sec" id="sec-heatmap">
+    <div class="insight-band"><div class="insight-body" id="hm-insight">記録が積み上がるほど、近藤の感性の地図が精度を増していきます。</div></div>
+    <div class="lbl">五感 × シーン · 記録密度マップ</div>
+    <div id="hm-wrap"></div>
+    <div class="lbl" style="margin-top:16px">季節別 · 感性の傾向</div>
+    <div class="season-grid" id="season-grid"></div>
+  </div>
+
+  <!-- ══ 1年後の私へ ══ -->
+  <div class="sec" id="sec-confidence">
+    <div class="year-msg" id="year-msg">まだ記録が始まっていません。最初の一歩を記録すると、ここに言葉が積み上がっていきます。</div>
+    <div class="lbl">自信の蓄積 · 記録数ベース</div>
+    <div class="conf-bar"><div class="conf-fill" id="conf-fill" style="width:0%"></div></div>
+    <div style="font-size:10px;color:var(--ink-2);margin-bottom:20px" id="conf-note">0件 / 目標100件</div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-l">記録した日数</div><div class="stat-v" id="c-days">0<span class="stat-u"> 日</span></div></div>
+      <div class="stat"><div class="stat-l">肯定された気づき</div><div class="stat-v" id="c-affirm">0<span class="stat-u"> 件</span></div></div>
+      <div class="stat"><div class="stat-l">言語化した記録</div><div class="stat-v" id="c-gen">0<span class="stat-u"> 件</span></div></div>
+    </div>
+    <div class="lbl">近藤の感性 · 強み TOP 3</div>
+    <div id="strength-list" style="margin-bottom:20px"></div>
+    <div class="lbl">言語化された近藤の言葉</div>
+    <div id="saved-quotes" style="margin-bottom:24px"></div>
+
+    <!-- 植田の裏テーマ -->
+    <div class="nav-panel">
+      <div class="nav-panel-header" onclick="toggleNav()">
+        <div class="nav-panel-title">Navigator · 植田孝倫の視点</div>
+        <button class="nav-toggle" id="nav-toggle">開く ∨</button>
+      </div>
+
+      <!-- パスコード入力 -->
+      <div id="nav-lock" style="display:none;padding:16px 0">
+        <div style="font-size:11px;color:var(--ink-2);margin-bottom:10px;letter-spacing:.06em">パスコードを入力してください</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="password" id="nav-passcode" maxlength="4" placeholder="····"
+            style="width:90px;border:0.5px solid var(--bdr2);border-radius:6px;padding:9px 13px;font-size:16px;letter-spacing:.3em;font-family:'Noto Sans JP',sans-serif;color:var(--ink);background:#fff;outline:none;text-align:center"
+            onkeydown="if(event.key==='Enter')checkPasscode()">
+          <button onclick="checkPasscode()"
+            style="padding:9px 18px;background:var(--ink);color:#fff;border:none;border-radius:6px;font-size:11px;letter-spacing:.1em;cursor:pointer;font-family:'Noto Sans JP',sans-serif">
+            確認
+          </button>
+        </div>
+        <div id="nav-lock-err" style="font-size:10px;color:#A32D2D;margin-top:6px;display:none">パスコードが違います</div>
+      </div>
+
+      <div class="nav-panel-body" id="nav-panel-body">
+        <div class="nav-kpi" id="nav-kpi"></div>
+        <div class="nav-insight">
+          <div class="nav-insight-label">哲学との共鳴度</div>
+          <div class="nav-insight-text" id="nav-phil-text">記録が蓄積されると、近藤の感性がNEUTRIZEの哲学にどれだけ共鳴しているかが見えてきます。</div>
+        </div>
+        <div id="nav-caution-sec" style="margin-top:12px;display:none">
+          <div class="lbl" style="color:#854F0B;margin-bottom:8px">指摘が入った記録 · 要確認</div>
+          <div id="nav-caution-list"></div>
+        </div>
+        <div class="nav-insight" style="margin-top:10px">
+          <div class="nav-insight-label">近藤への次のアクション</div>
+          <div class="nav-insight-text" id="nav-action-text">記録が増えると、ここに近藤へのアドバイスが現れます。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SENSES = ['音','香り','清潔感','室温','照明','言葉','間','空気感'];
+const SCENES = ['カウンセリング','来店直後','シャンプー中','施術中','放置時間中','仕上げ','会計時','見送り'];
+const SCENE_SHORT = ['カウンセ','来店','シャンプー','施術中','放置中','仕上げ','会計','見送り'];
+const FMT_LABELS = {record:'記録',recipe:'レシピ',message:'スタッフへのメッセージ',philosophy:'言葉の帳'};
+
+let moments = JSON.parse(localStorage.getItem('linger_moments') || '[]');
+let pendingMoment = null;
+let curFilter = 'all';
+let curFmt = 'record';
+let lastGenText = '';
+let navOpen = false;
+let apiKey = localStorage.getItem('linger_api_key') || '';
+
+const PHIL = `NEUTRIZEの哲学：1.「帰りたくない」を設計する 2.押しつけない、でも届ける 3.感じたことを形にする権利がある 4.お客様の記憶に残ることが目的 5.佇まいがサービスである
+近藤千寿：明るくポジティブに見えるが内側は繊細で少し自信がない。根本には野心と感性への確信がある。気づきすぎるほど感度が高い。言語化が苦手。`;
+
+const SYS_FB = `あなたはNEUTRIZEのGuest Experience Designerである近藤千寿の信頼できるメンターです。
+${PHIL}
+役割：近藤の記録をNEUTRIZEの哲学に照らしてフィードバックを返す。
+ルール：基本は肯定。哲学に沿っている場合はその気づきの価値を2〜3文で伝える。哲学からズレている場合は否定せず「でも〜という視点もある」と最後の1文だけ添える。常に近藤の自信を積み上げる方向で。文体：温かく品のある日本語。3文以内。
+出力形式：1行目に "affirm" または "caution" とだけ書き、改行して本文。`;
+
+const SYS_GEN = `あなたは近藤千寿（NEUTRIZE Guest Experience Designer）の言語化アシスタント。
+${PHIL}
+文体：近藤の言葉（一人称：私）。「べき」「ねばならない」使わない。断定より問いかけ。美しく難しくない日本語。
+形式別：recipe=再現できる手順3〜4項目を流れる文章で各手順は「〜する」で終わる。message=朝礼5分分2段落最後に一言。philosophy=1〜2文の格言。
+出力は変換された文章のみ。前置き不要。`;
+
+function setApiKey() {
+  const val = document.getElementById('api-key-input').value.trim();
+  if (!val.startsWith('sk-')) {
+    document.getElementById('api-status').className = 'api-status ng';
+    document.getElementById('api-status').textContent = 'APIキーは sk- で始まる必要があります';
+    return;
+  }
+  apiKey = val;
+  localStorage.setItem('linger_api_key', val);
+  document.getElementById('api-status').className = 'api-status ok';
+  document.getElementById('api-status').textContent = '設定しました。記録を開始できます。';
+  document.getElementById('api-key-input').value = '';
+  setTimeout(() => document.getElementById('api-setup').style.display = 'none', 1200);
+}
+
+function initApiSetup() {
+  if (apiKey) document.getElementById('api-setup').style.display = 'none';
+}
+
+function rtog(el) { el.classList.toggle('on'); }
+function rscene(el) { document.querySelectorAll('#r-scene .chip').forEach(c => c.classList.remove('on')); el.classList.add('on'); }
+function setFmt(f, el) { curFmt = f; document.querySelectorAll('.fmt').forEach(b => b.classList.remove('on')); el.classList.add('on'); }
+
+async function callAPI(system, userMsg) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({ model: 'claude-opus-4-6', max_tokens: 600, system, messages: [{ role: 'user', content: userMsg }] })
+  });
+  if (!res.ok) throw new Error('API error ' + res.status);
+  const data = await res.json();
+  return data?.content?.[0]?.text || '';
+}
+
+async function saveRecord() {
+  const text = document.getElementById('r-text').value.trim();
+  if (!text) return;
+  const senses = [...document.querySelectorAll('#r-sense .chip.on')].map(b => b.textContent.trim().replace(/^[♪◎◇○◈—·~]\s*/, '')).join('・') || '記録';
+  const scene = document.querySelector('#r-scene .chip.on')?.textContent || '—';
+  const targets = [...document.querySelectorAll('#r-target .chip.on')].map(b => b.textContent).join('・');
+  const intensity = parseInt(document.getElementById('r-int').value);
+  const d = new Date();
+  const date = d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
+
+  pendingMoment = { sense: senses, scene, targets, text, intensity, date, fmt: curFmt, fb: '', fbType: 'affirm', generated: '' };
+  setRecLoading(true);
+
+  const ctx = `五感：${senses}\nシーン：${scene}${targets ? '\n対象：' + targets : ''}\n内容：${text}\n強さ：${intensity}/5`;
+
+  try {
+    const [fbRaw, genRaw] = await Promise.all([
+      callAPI(SYS_FB, '近藤千寿の気づき：\n' + ctx),
+      curFmt !== 'record' ? callAPI(SYS_GEN, `以下を「${FMT_LABELS[curFmt]}」形式に変換：\n${ctx}`) : Promise.resolve('')
+    ]);
+    const lines = fbRaw.trim().split('\n');
+    const fbType = lines[0].trim().toLowerCase().includes('caution') ? 'caution' : 'affirm';
+    const fbText = lines.slice(1).join('\n').trim();
+    pendingMoment.fb = fbText;
+    pendingMoment.fbType = fbType;
+    pendingMoment.generated = genRaw.trim();
+    lastGenText = genRaw.trim();
+    showFeedback(fbText, fbType, genRaw.trim());
+  } catch(e) {
+    pendingMoment.fb = 'この気づきは、確かに届いた。';
+    pendingMoment.fbType = 'affirm';
+    showFeedback(pendingMoment.fb, 'affirm', '');
+  }
+  setRecLoading(false);
+}
+
+function showFeedback(fb, type, gen) {
+  const card = document.getElementById('fb-card');
+  document.getElementById('fb-label').textContent = type === 'affirm' ? '近藤へ · その感性は正しい' : '近藤へ · 一緒に考えたいこと';
+  document.getElementById('fb-text').textContent = fb;
+  card.className = 'fb-card show ' + type;
+  const genBox = document.getElementById('gen-box');
+  const copyBtn = document.getElementById('copy-btn');
+  if (gen && curFmt !== 'record') {
+    document.getElementById('gen-label').textContent = FMT_LABELS[curFmt] + ' · 近藤の言葉';
+    document.getElementById('gen-text').textContent = gen;
+    genBox.classList.add('show');
+    copyBtn.style.display = 'block';
+  } else {
+    genBox.classList.remove('show');
+    copyBtn.style.display = 'none';
+  }
+  document.getElementById('commit-btn').disabled = false;
+  document.getElementById('commit-btn').textContent = 'この記録を保存する';
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function commitSave() {
+  if (!pendingMoment) return;
+  moments.unshift(pendingMoment);
+  localStorage.setItem('linger_moments', JSON.stringify(moments));
+  document.getElementById('commit-btn').disabled = true;
+  document.getElementById('commit-btn').textContent = '保存しました';
+  setTimeout(() => {
+    document.getElementById('commit-btn').textContent = 'この記録を保存する';
+    document.getElementById('fb-card').classList.remove('show');
+  }, 2000);
+  document.getElementById('r-text').value = '';
+  document.querySelectorAll('#sec-record .chip').forEach(c => c.classList.remove('on'));
+  document.getElementById('r-int').value = 3;
+  document.getElementById('r-intv').textContent = '3';
+  document.querySelectorAll('.fmt').forEach((b,i) => b.classList.toggle('on', i === 0));
+  curFmt = 'record';
+  updateNavCount();
+  pendingMoment = null;
+}
+
+function copyGen() {
+  if (!lastGenText) return;
+  navigator.clipboard.writeText(lastGenText).catch(() => {});
+  const b = document.getElementById('copy-btn');
+  b.textContent = 'コピーしました';
+  setTimeout(() => b.textContent = 'コピー', 1800);
+}
+
+function setRecLoading(on) {
+  document.getElementById('save-btn').disabled = on;
+  document.getElementById('save-spin').classList.toggle('show', on);
+  document.getElementById('save-lbl').textContent = on ? 'フィードバックをもらっています…' : '記録してフィードバックをもらう';
+}
+
+function updateNavCount() {
+  const n = moments.length;
+  document.getElementById('nav-count').textContent = n > 0 ? n + '件の記録' : 'まだ記録がありません';
+}
+
+function setFilter(el, val) {
+  document.querySelectorAll('.f-tag').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  curFilter = val;
+  renderArchive();
+}
+
+function renderArchive() {
+  let f = moments;
+  if (curFilter === 'affirm') f = moments.filter(m => m.fbType === 'affirm');
+  else if (curFilter === 'caution') f = moments.filter(m => m.fbType === 'caution');
+  else if (curFilter === 'strong') f = moments.filter(m => m.intensity >= 5);
+  else if (curFilter === 'generated') f = moments.filter(m => m.generated);
+  const tl = document.getElementById('timeline');
+  const emp = document.getElementById('arc-empty');
+  if (!f.length) { tl.innerHTML = ''; emp.style.display = 'block'; }
+  else {
+    emp.style.display = 'none';
+    tl.innerHTML = f.map(m => `
+      <div class="t-item ${m.intensity >= 4 ? 'strong' : ''}">
+        <div class="t-dot"></div>
+        <div class="t-date">${m.date}</div>
+        <div class="t-sense">${m.sense}${m.scene && m.scene !== '—' ? ' · ' + m.scene : ''}${m.targets ? ' → ' + m.targets : ''}</div>
+        <div class="t-text">${m.text}</div>
+        ${m.generated ? `<div class="t-gen">${m.generated.slice(0,140)}${m.generated.length>140?'…':''}</div>` : ''}
+        ${m.fb ? `<div class="t-fb ${m.fbType}">${m.fb}</div>` : ''}
+        <div class="t-meta">
+          ${m.fmt && m.fmt !== 'record' ? `<span class="t-fmt">${FMT_LABELS[m.fmt]}</span>` : ''}
+          <div class="t-stars">${[1,2,3,4,5].map(i => `<div class="t-star ${i<=m.intensity?'on':''}"></div>`).join('')}</div>
+        </div>
+      </div>`).join('');
+  }
+  const n = moments.length;
+  document.getElementById('arc-total').innerHTML = n + '<span class="stat-u"> 件</span>';
+  const af = moments.filter(m => m.fbType === 'affirm').length;
+  document.getElementById('arc-affirm').innerHTML = (n ? Math.round(af/n*100) : 0) + '<span class="stat-u"> %</span>';
+  const sc = {}; moments.forEach(m => m.sense.split('・').forEach(s => { sc[s] = (sc[s]||0)+1; }));
+  const top = Object.entries(sc).sort((a,b) => b[1]-a[1])[0];
+  document.getElementById('arc-top').textContent = top ? top[0] : '—';
+}
+
+function renderHeatmap() {
+  const data = {};
+  moments.forEach(m => {
+    m.sense.split('・').forEach(s => {
+      SCENES.forEach((sc, si) => {
+        if (m.scene === sc) { const k = s+'_'+si; data[k] = (data[k]||0) + m.intensity; }
+      });
+    });
+  });
+  const base = {音:{2:3,4:2},香り:{0:3,1:2},清潔感:{1:2,2:1},照明:{3:4,2:2},言葉:{0:3,4:3,7:5},間:{0:4,2:2,7:4},空気感:{0:3,1:2,4:2,7:3}};
+  let html = `<div class="hm-grid" style="grid-template-columns:54px repeat(${SCENES.length},1fr)">`;
+  html += '<div class="hm-head"></div>';
+  SCENE_SHORT.forEach(s => html += `<div class="hm-head">${s}</div>`);
+  SENSES.forEach(sense => {
+    html += `<div class="hm-cell hm-label">${sense}</div>`;
+    SCENES.forEach((_, si) => {
+      const k = sense+'_'+si;
+      const raw = (data[k]||0) + (base[sense] ? base[sense][si]||0 : 0);
+      const lv = raw===0?0:raw<=2?1:raw<=4?2:raw<=6?3:4;
+      const labels = ['','◦','◌','●','◉'];
+      html += `<div class="hm-cell hm-${lv}">${lv>0?labels[lv]:''}</div>`;
+    });
+  });
+  html += '</div><div class="legend"><span class="legend-l">少</span><div class="legend-dots"><div class="legend-dot hm-0"></div><div class="legend-dot hm-1"></div><div class="legend-dot hm-2"></div><div class="legend-dot hm-3"></div><div class="legend-dot hm-4"></div></div><span class="legend-l">多</span></div>';
+  document.getElementById('hm-wrap').innerHTML = html;
+  const sc2 = {}; moments.forEach(m => m.sense.split('・').forEach(s => { sc2[s] = (sc2[s]||0)+1; }));
+  const sorted = Object.entries(sc2).sort((a,b) => b[1]-a[1]);
+  const t1 = sorted[0]?sorted[0][0]:'言葉'; const t2 = sorted[1]?sorted[1][0]:'空気感';
+  document.getElementById('hm-insight').textContent = moments.length
+    ? `近藤の感性は「${t1}」と「${t2}」に最も集中しています。記録を続けるほど、この地図はあなた自身の証明になっていきます。`
+    : '記録が積み上がるほど、近藤の感性の地図が精度を増していきます。';
+  const seasons = [
+    {s:'春',top:'言葉・間',note:'新規客多い。カウンセリングと見送りに集中'},
+    {s:'夏',top:'照明・空気感',note:'夕方施術多く、光と空気の演出が際立つ'},
+    {s:'秋',top:'香り・室温',note:'温度変化大きい。包まれる感覚が記録に多い'},
+    {s:'冬',top:'空気感・言葉',note:'来店直後の温かさと声かけが最も印象に残る'},
+  ];
+  document.getElementById('season-grid').innerHTML = seasons.map(d =>
+    `<div class="season-card"><div class="season-name">${d.s}</div><div class="season-top">${d.top}</div><div class="season-note">${d.note}</div></div>`
+  ).join('');
+}
+
+function renderConfidence() {
+  const n = moments.length;
+  const pct = Math.min(Math.round(n/100*100), 100);
+  document.getElementById('conf-fill').style.width = pct + '%';
+  document.getElementById('conf-note').textContent = n + '件 / 目標100件（' + pct + '%）';
+  const dates = new Set(moments.map(m => m.date));
+  document.getElementById('c-days').innerHTML = dates.size + '<span class="stat-u"> 日</span>';
+  const af = moments.filter(m => m.fbType === 'affirm').length;
+  document.getElementById('c-affirm').innerHTML = af + '<span class="stat-u"> 件</span>';
+  const gen = moments.filter(m => m.generated).length;
+  document.getElementById('c-gen').innerHTML = gen + '<span class="stat-u"> 件</span>';
+  const sc = {}; moments.forEach(m => m.sense.split('・').forEach(s => { sc[s] = (sc[s]||0)+1; }));
+  const top3 = Object.entries(sc).sort((a,b) => b[1]-a[1]).slice(0,3);
+  const sl = document.getElementById('strength-list');
+  if (!top3.length) sl.innerHTML = '<div class="empty" style="padding:12px 0">記録が増えると、ここに近藤の強みが現れます。</div>';
+  else sl.innerHTML = top3.map((s,i) => `
+    <div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:0.5px solid var(--bdr)">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--pk);min-width:22px">${i+1}</div>
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--ink)">${s[0]}</div>
+        <div style="font-size:10px;color:var(--ink-2)">${s[1]}件の記録</div>
+      </div>
+    </div>`).join('');
+  const withGen = moments.filter(m => m.generated).slice(0,5);
+  const sq = document.getElementById('saved-quotes');
+  if (!withGen.length) sq.innerHTML = '<div class="empty" style="padding:12px 0">言語化して保存した記録がここに並びます。</div>';
+  else sq.innerHTML = withGen.map(m => `
+    <div style="padding:12px 0;border-bottom:0.5px solid var(--bdr)">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;line-height:1.9;color:var(--ink);margin-bottom:4px">${m.generated.slice(0,120)}${m.generated.length>120?'…':''}</div>
+      <div style="font-size:9px;color:var(--ink-3)">${m.date} · ${FMT_LABELS[m.fmt]}</div>
+    </div>`).join('');
+  const msgs = [
+    'まだ記録が始まっていません。最初の一歩を記録すると、ここに言葉が積み上がっていきます。',
+    `${n}件の気づき。これは近藤が${n}回、自分の感性を信じた証拠。`,
+    `感度が高い分、迷うことも多かったはず。でも記録が証明している——あなたの「気になる」は、いつも正しかった。`,
+    `${af}件が肯定された。それは近藤の感性がNEUTRIZEの哲学と共鳴している数。この数字が、自信の根拠になる。`,
+  ];
+  document.getElementById('year-msg').textContent = msgs[Math.min(Math.floor(n/3), msgs.length-1)];
+
+  // 植田の視点
+  const affirmRate = n ? Math.round(af/n*100) : 0;
+  const genRate = n ? Math.round(gen/n*100) : 0;
+  const avgInt = n ? Math.round(moments.reduce((a,m) => a+m.intensity, 0)/n*10)/10 : 0;
+  const kpiStatus = (v,g,w) => v>=g?'good':v>=w?'warn':'risk';
+  document.getElementById('nav-kpi').innerHTML = [
+    {l:'哲学共鳴率', v:affirmRate+'%', note:affirmRate>=80?'高い一致':'指摘に注目', cls:kpiStatus(affirmRate,80,60)},
+    {l:'言語化率',   v:genRate+'%',    note:genRate>=40?'言葉が育っている':'まだ断片が多い', cls:kpiStatus(genRate,40,20)},
+    {l:'平均感度',   v:avgInt+'/5',    note:avgInt>=4?'鋭い観察眼':'記録を続けて', cls:kpiStatus(avgInt,4,3)},
+  ].map(k => `<div class="nav-kpi-card ${k.cls}"><div class="nav-kpi-l">${k.l}</div><div class="nav-kpi-v">${k.v}</div><div class="nav-kpi-note">${k.note}</div></div>`).join('');
+  const cautions = moments.filter(m => m.fbType === 'caution');
+  document.getElementById('nav-phil-text').textContent = n === 0
+    ? '記録が蓄積されると、近藤の感性がNEUTRIZEの哲学にどれだけ共鳴しているかが見えてきます。'
+    : affirmRate >= 80
+      ? `${n}件中${af}件が哲学と共鳴。近藤の感性はNEUTRIZEの方向を正確に向いている。このまま言語化を促せば、スタッフへの影響力がさらに高まります。`
+      : affirmRate >= 60
+        ? `共鳴率${affirmRate}%。おおむね良好ですが、指摘が入った${cautions.length}件は植田が直接フォローするタイミングです。`
+        : `共鳴率${affirmRate}%。近藤の感性と哲学の間にズレが生じている可能性があります。朝礼や1on1で哲学の軸を確認することを推奨します。`;
+  const cautionSec = document.getElementById('nav-caution-sec');
+  if (cautions.length) {
+    cautionSec.style.display = 'block';
+    document.getElementById('nav-caution-list').innerHTML = cautions.slice(0,3).map(m =>
+      `<div class="nav-caution-item"><strong>${m.date} · ${m.sense}</strong><br>${m.text.slice(0,60)}${m.text.length>60?'…':''}<br><span style="font-size:10px;opacity:.8">${m.fb}</span></div>`
+    ).join('');
+  } else { cautionSec.style.display = 'none'; }
+  document.getElementById('nav-action-text').textContent = n === 0
+    ? '近藤に最初の記録を促してください。「今日感じたことを3行でいい」と伝えるだけで始まります。'
+    : gen === 0
+      ? '言語化機能をまだ使っていません。「レシピ」または「言葉の帳」形式で記録するよう、近藤に伝えてみてください。'
+      : cautions.length > 2
+        ? `指摘が${cautions.length}件蓄積されています。哲学の軸を確認する1on1を設けることを推奨します。`
+        : `順調に記録が蓄積されています。次のステップは近藤が言語化したレシピをスタッフに共有する場をつくること。`;
+}
+
+const NAV_CODE = '1213';
+let navUnlocked = false;
+
+function toggleNav() {
+  if (navOpen) {
+    navOpen = false;
+    document.getElementById('nav-panel-body').classList.remove('open');
+    document.getElementById('nav-lock').style.display = 'none';
+    document.getElementById('nav-toggle').textContent = '開く ∨';
+    return;
+  }
+  navOpen = true;
+  document.getElementById('nav-toggle').textContent = '閉じる ∧';
+  if (navUnlocked) {
+    document.getElementById('nav-panel-body').classList.add('open');
+  } else {
+    document.getElementById('nav-lock').style.display = 'block';
+    setTimeout(() => document.getElementById('nav-passcode').focus(), 50);
+  }
+}
+
+function checkPasscode() {
+  const val = document.getElementById('nav-passcode').value;
+  const err = document.getElementById('nav-lock-err');
+  if (val === NAV_CODE) {
+    navUnlocked = true;
+    document.getElementById('nav-lock').style.display = 'none';
+    document.getElementById('nav-panel-body').classList.add('open');
+    document.getElementById('nav-passcode').value = '';
+    err.style.display = 'none';
+    renderConfidence();
+  } else {
+    err.style.display = 'block';
+    document.getElementById('nav-passcode').value = '';
+    document.getElementById('nav-passcode').focus();
+  }
+}
+
+function sw(name) {
+  const tabs = ['record','archive','heatmap','confidence'];
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', tabs[i] === name));
+  document.querySelectorAll('.sec').forEach(s => s.classList.toggle('active', s.id === 'sec-'+name));
+  if (name === 'archive') renderArchive();
+  if (name === 'heatmap') renderHeatmap();
+  if (name === 'confidence') renderConfidence();
+}
+
+// Init
+const d = new Date();
+document.getElementById('today-lbl').textContent = d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
+updateNavCount();
+renderArchive();
+initApiSetup();
+</script>
+
+<script>
+// PWA install
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!localStorage.getItem('linger_install_dismissed')) {
+    document.getElementById('install-banner').classList.add('show');
+  }
+});
+async function installPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    document.getElementById('install-banner').classList.remove('show');
+  }
+  deferredPrompt = null;
+}
+function dismissInstall() {
+  document.getElementById('install-banner').classList.remove('show');
+  localStorage.setItem('linger_install_dismissed', '1');
+}
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-banner').classList.remove('show');
+});
+
+// Service Worker for offline
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    const CACHE = 'linger-v1';
+    const FONT_URLS = [
+      'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Sans+JP:wght@300;400&display=swap'
+    ];
+    self.addEventListener('install', e => {
+      e.waitUntil(
+        caches.open(CACHE).then(c => c.addAll(FONT_URLS)).catch(() => {})
+      );
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(caches.keys().then(keys =>
+        Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      ));
+      self.clients.claim();
+    });
+    self.addEventListener('fetch', e => {
+      if (e.request.method !== 'GET') return;
+      e.respondWith(
+        fetch(e.request).catch(() => caches.match(e.request))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+</script>
+</body>
+</html>
